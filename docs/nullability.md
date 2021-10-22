@@ -22,7 +22,7 @@ making fields nullable.
 It is also rarely the case that clients are set up to handle partial data. If you
 want to provide partial data, make sure it's something the client can actually use.
 
-If a field is non-nullable, then everything in that type will be null. For 
+If a field is non-nullable, then everything in that type will be null. For
 instance, if in the Business object, the name is non-nullable, but something goes
 wrong and the name ends up being null anyway, the whole Business object will be
 made null. If the Business object was nullable it stops there, otherwise
@@ -92,7 +92,7 @@ type Business {
 {
   "business": {
     "name": "Bobs Doughnuts",
-    "location": null 
+    "location": null
   }
 }
 # What is actually served to the client
@@ -121,10 +121,10 @@ type Business {
   For many simple scalar fields, if the field is null, the type doesn't make much sense.
 
 ```graphql
-  type Money {
-    value: Int!
-    currencyCode: String!
-  }
+type Money {
+  value: Int!
+  currencyCode: String!
+}
 ```
 
 _E.g. the `Money` type doesn't make sense if `value` or `currencyCode` are missing._
