@@ -5,5 +5,5 @@ reasonable approach to GraphQL (at Yelp).
 
 Guidelines:
 
-- [Schema Design](./schema-design)
-- [Nullability](./nullability)
+- [Schema Design](./schema-design.md)
+- [Nullability](./nullability.md)
