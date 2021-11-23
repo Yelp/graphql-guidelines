@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>🎨 Schema Design | GraphQL @ Yelp Schema Design Guidelines</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    <link rel="icon" href="/graphql-guidelines/logo.png">
+    <meta name="description" content="Schema Design Guidelines for GraphQL @ Yelp">
+    
+    <link rel="preload" href="/graphql-guidelines/assets/css/0.styles.1657012b.css" as="style"><link rel="preload" href="/graphql-guidelines/assets/js/app.39fdcfd0.js" as="script"><link rel="preload" href="/graphql-guidelines/assets/js/2.36e16460.js" as="script"><link rel="preload" href="/graphql-guidelines/assets/js/7.1de9bfa9.js" as="script"><link rel="prefetch" href="/graphql-guidelines/assets/js/3.c1413f7b.js"><link rel="prefetch" href="/graphql-guidelines/assets/js/4.5e68e7c8.js"><link rel="prefetch" href="/graphql-guidelines/assets/js/5.60881b85.js"><link rel="prefetch" href="/graphql-guidelines/assets/js/6.b6725816.js"><link rel="prefetch" href="/graphql-guidelines/assets/js/8.41003aff.js"><link rel="prefetch" href="/graphql-guidelines/assets/js/9.3b41c15d.js">
+    <link rel="stylesheet" href="/graphql-guidelines/assets/css/0.styles.1657012b.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/graphql-guidelines/" class="home-link router-link-active"><img src="/graphql-guidelines/logo.png" alt="GraphQL @ Yelp Schema Design Guidelines" class="logo"> <span class="site-name can-hide">GraphQL @ Yelp Schema Design Guidelines</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <!----></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><!---->  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>GraphQL Styleguide</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/graphql-guidelines/schema-design.html" aria-current="page" class="active sidebar-link">🎨 Schema Design</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#types-of-types" class="sidebar-link">Types of types</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#keep-the-top-level-queries-to-a-minimum" class="sidebar-link">Keep the top level queries to a minimum</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#be-specific-when-naming-types" class="sidebar-link">Be specific when naming types</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#don-t-namespace-the-fields" class="sidebar-link">Don't namespace the fields</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#describe-the-data-not-the-view" class="sidebar-link">Describe the data, not the view</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#link-via-types-not-ids" class="sidebar-link">Link via types, not IDs</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#use-existing-standardized-types-and-scalars" class="sidebar-link">Use existing standardized types and scalars</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#group-related-fields-together" class="sidebar-link">Group related fields together</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#use-triple-quotes-for-descriptions" class="sidebar-link">Use triple quotes for descriptions</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#space-out-field-descriptions" class="sidebar-link">Space out field descriptions</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#be-super-explicit-with-comments-and-descriptions" class="sidebar-link">Be super explicit with comments and descriptions</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/schema-design.html#use-nullable-for-most-object-fields-by-default-but-there-are-many-exceptions" class="sidebar-link">Use nullable for most object fields by default, but there are many exceptions</a></li></ul></li><li><a href="/graphql-guidelines/nullability.html" class="sidebar-link">❓ Nullability</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="schema-design"><a href="#schema-design" class="header-anchor">#</a> 🎨 Schema Design</h1> <p>The GraphQL Schema is global to the whole of Yelp engineering. Ultimately, we
+want to be able to model the whole of Yelp's user facing business data in
+GraphQL. This page contains guidance on how we're thinking about this, in an
+effort to present a clean, usable and scalable schema.</p> <p>Before going any further, it's highly encouraged to skim over
+<a href="https://graphql.org/learn/schema/" target="_blank" rel="noopener noreferrer">the official docs<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> on this subject to
+understand how the schema works.</p> <div class="custom-block warning"><p class="custom-block-title">Why do we care about this?</p> <p>The schema (for now) is
+<a href="https://graphql.org/learn/best-practices/#versioning" target="_blank" rel="noopener noreferrer">versionless<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>. Adding
+bad types and making breaking changes can be costly, and best avoided.
+Following this guide will help our schema stay in good shape!</p></div> <p><strong>Contents</strong></p><div class="table-of-contents"><ul><li><a href="#types-of-types">Types of types</a></li><li><a href="#keep-the-top-level-queries-to-a-minimum">Keep the top level queries to a minimum</a></li><li><a href="#be-specific-when-naming-types">Be specific when naming types</a></li><li><a href="#don-t-namespace-the-fields">Don't namespace the fields</a></li><li><a href="#describe-the-data-not-the-view">Describe the data, not the view</a></li><li><a href="#link-via-types-not-ids">Link via types, not IDs</a></li><li><a href="#use-existing-standardized-types-and-scalars">Use existing standardized types and scalars</a></li><li><a href="#group-related-fields-together">Group related fields together</a></li><li><a href="#use-triple-quotes-for-descriptions">Use triple quotes for descriptions</a></li><li><a href="#space-out-field-descriptions">Space out field descriptions</a></li><li><a href="#be-super-explicit-with-comments-and-descriptions">Be super explicit with comments and descriptions</a></li><li><a href="#use-nullable-for-most-object-fields-by-default-but-there-are-many-exceptions">Use nullable for most object fields by default, but there are many exceptions</a></li></ul></div><p></p> <h2 id="types-of-types"><a href="#types-of-types" class="header-anchor">#</a> Types of types</h2> <p>In general, we have two types of <em>types</em> at Yelp 😃 You should consider what
+type of type you're adding:</p> <ol><li><p><strong>Core types</strong></p> <p>Things like <code>Business</code>, <code>User</code> etc. These are types that are common to many
+pages, teams or components at Yelp.</p></li> <li><p><strong>Domain specific types</strong></p> <p>These are types that would only be used in one or a handful of
+components/teams. Examples would be <code>BusinessClaimability</code> or
+<code>EventsPageLeftRailAttendWidget</code></p></li></ol> <p>Thinking about types in this way helps us communicate and establish ownership.
+For example, this helps us decide:</p> <ul><li>How much scrutiny should be applied in schema change code reviews</li> <li>What's the impact if a resolver starts consistently failing</li></ul> <p>Core types are the most widely used, and at the root of many queries.
+As such, they generally have a higher bar for meeting our schema guidelines, and
+any runtime issues should be triaged urgently.</p> <h2 id="keep-the-top-level-queries-to-a-minimum"><a href="#keep-the-top-level-queries-to-a-minimum" class="header-anchor">#</a> Keep the top level queries to a minimum</h2> <p>As much as possible, we want to model Yelp data as a tree, with Core Types as
+the root nodes. Before adding a new top level query, consider if it makes more
+sense to add it as an attribute of an existing type instead.</p> <ul><li><p><strong>Why?</strong></p> <p>This helps keep our schema easier to read through at the top level, and aims
+to keep how the data is organized consistent.</p></li> <li><p><strong>Example</strong></p> <p>Instead of adding <code>canClaimBusiness</code> as a top level query under <code>root</code>, this
+can be an attribute (<code>claimability</code>) on the existing <code>Business</code> type.</p></li></ul> <h2 id="be-specific-when-naming-types"><a href="#be-specific-when-naming-types" class="header-anchor">#</a> Be specific when naming types</h2> <p>Be specific with the naming of types. Namespace as much as possible (within
+reason)!</p> <ul><li><p><strong>Why?</strong></p> <p>It helps disambiguate what types are relevant to other types, and reduces
+naming collisions. (e.g. is <code>Price</code> the price range for a business? Or the
+ticket price for a Yelp event? Or something else?!)</p></li> <li><p><strong>Example</strong></p> <p>Prefer <code>BusinessCategory</code> instead of <code>Category</code></p></li></ul> <h2 id="don-t-namespace-the-fields"><a href="#don-t-namespace-the-fields" class="header-anchor">#</a> Don't namespace the fields</h2> <p>As an addendum to the above, <em>fields</em> don't need to be overly specific/namespaced.</p> <ul><li><p><strong>Why?</strong></p> <p>Fields are already implicitly namespaced by the <em>type</em> that they're a field
+of. In other words, you always know what the parent type is in the context of
+a field name. (By contrast, a Type could be returned by anyone - you don't
+know what field name will return it.)</p></li> <li><p><strong>Example</strong></p> <p>Instead of</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">BusinessAddress</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Formatted stringy version of address based on locale
+  It reflects a new line using a new line character
+  Example: 196 N Pleasant St\nAmherst, MA 01002
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">formattedBusinessAddress</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Prefer:</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">BusinessAddress</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Formatted stringy version of address based on locale
+  It reflects a new line using a new line character
+  Example: 196 N Pleasant St\nAmherst, MA 01002
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">formatted</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><em>(An exception to this may be for fields on the root types (Query, Mutation, Subscription). Such &quot;top level&quot; fields are global, and probably still want to
+be namespaced.)</em></p></li></ul> <h2 id="describe-the-data-not-the-view"><a href="#describe-the-data-not-the-view" class="header-anchor">#</a> Describe the data, not the view</h2> <ul><li><p><strong>Why?</strong></p> <blockquote><p><em>Make sure that your API isn't linked too closely with the demands of your initial
+interface. If you're building an API for an iOS app, you might later port it to
+other devices such as desktop computers or feature phones. When building queries,
+focus on the underlying data, rather than how it's represented in your application.</em></p> <p><a href="https://www.graphql.com/articles/4-years-of-graphql-lee-byron" target="_blank" rel="noopener noreferrer">https://www.graphql.com/articles/4-years-of-graphql-lee-byron<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></blockquote></li> <li><p><strong>Example</strong></p> <p>Put in Yelpy terms; don't add a &quot;UserProfileCard&quot; type to return down the data
+to render a user's information in a Profile component.</p> <p>Instead, use the existing <code>User</code> type and return that to populate the Profile
+card component.</p></li></ul> <h2 id="link-via-types-not-ids"><a href="#link-via-types-not-ids" class="header-anchor">#</a> Link via types, not IDs</h2> <p>When referencing one type from another, link directly to the type.</p> <ul><li><p><strong>Why?</strong></p> <p>This allows developers greater flexibility when fetching data. If you only
+provide the ID of the thing you're linking to, that means the browser has to
+make a follow up query to fetch data about that entity.</p></li> <li><p><strong>Example</strong></p> <p>Instead of</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Review</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  ID of the business that this review is about
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">businessId</span><span class="token punctuation">:</span> <span class="token scalar">Int</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Prefer</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Review</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  The business that this review is about
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">business</span><span class="token punctuation">:</span> <span class="token class-name">Business</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul> <h2 id="use-existing-standardized-types-and-scalars"><a href="#use-existing-standardized-types-and-scalars" class="header-anchor">#</a> Use existing standardized types and scalars</h2> <p>We have existing standardized types for representing:</p> <ul><li>Photos</li> <li>Dates / Times</li></ul> <p>Use these when representing such information.</p> <ul><li><p><strong>Why?</strong></p> <p>These types allow us to standardize how we model and consume common data types
+across the schema. This lets us avoid duplication of work and concepts.</p></li> <li><p><strong>Example</strong></p> <p>Instead of</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Review</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  A photo that the user uploaded with this review
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">uploadedPhotoUrl</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  When was this review posted?
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">createdAt</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Prefer</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Review</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  A photo that the user uploaded with this review
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">uploadedPhoto</span><span class="token punctuation">:</span> <span class="token class-name">BusinessPhoto</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  When was this review posted?
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">createdAt</span><span class="token punctuation">:</span> <span class="token class-name">DateTime</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul> <h2 id="group-related-fields-together"><a href="#group-related-fields-together" class="header-anchor">#</a> Group related fields together</h2> <p>Err on the side of grouping related fields together under a new type. Don't be
+afraid of adding nesting to the schema!</p> <ul><li><p><strong>Why?</strong></p> <p>We want to reduce the bloat on our core types like <code>Business</code> and <code>User</code>. We
+prefer to keep the number of fields on core types to a minimum, to aid the
+discoverability of existing related fields by subgrouping them under a
+common prefix. (Imagine scrolling through the docs sidebar over
+<em>hundreds</em> of fields in GraphiQL!)</p> <p>In turn, better discoverability can help us avoid accidentally adding
+duplicate fields elsewhere in the schema.</p> <p>If you are starting off with a new type and aren't sure whether it needs to
+be subgrouped yet or not, consider <a href="https://en.wikipedia.org/wiki/Rule_of_three_(computer_programming)" target="_blank" rel="noopener noreferrer">the rule of three<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>. It's
+OK to add it directly to the type to <em>start</em> with - and if you find yourself
+needing to add other related types in the future, deprecate it and migrate
+over to this new pattern.</p></li> <li><p><strong>Example</strong></p> <p>Instead of</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">extend</span> <span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Is this business an advertiser with us?
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">isAdvertiser</span><span class="token punctuation">:</span> <span class="token scalar">Boolean</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  How many times have users clicked this business's advertisement
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">adClicks</span><span class="token punctuation">:</span> <span class="token class-name">Number</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Amount of estimated revenue the business has earned from a campaign
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">revenueFromCampaign</span><span class="token punctuation">:</span> <span class="token class-name">Number</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Search keywords that we should ads for this business on
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">adKeywords</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token scalar">String</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Prefer</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">BusinessAdvertising</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Is this business an advertiser with us?
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">isAdvertiser</span><span class="token punctuation">:</span> <span class="token scalar">Boolean</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  How many times have users clicked this business's advertisement
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">clicks</span><span class="token punctuation">:</span> <span class="token class-name">Number</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Amount of estimated revenue the business has earned from a campaign
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">revenueFromCampaign</span><span class="token punctuation">:</span> <span class="token class-name">Number</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Search keywords that we should ads for this business on
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">keywords</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token scalar">String</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">extend</span> <span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Information related to our Business Advertising product
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">advertising</span><span class="token punctuation">:</span> <span class="token class-name">BusinessAdvertising</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>This can (and should!) be broken up even further with time, should the types
+grow even more.</p></li> <li><p><strong>Prior art</strong></p> <ul><li><a href="https://github.com/Shopify/graphql-design-tutorial/blob/master/TUTORIAL.md#rules-and-subobjects" target="_blank" rel="noopener noreferrer">&quot;Group closely-related fields together into subobjects&quot;<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://www.apollographql.com/blog/graphql-schema-design-building-evolvable-schemas-1501f3c59ed5" target="_blank" rel="noopener noreferrer">&quot;Prefer Object Types over simpler structures&quot;<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li></ul></li></ul> <h2 id="use-triple-quotes-for-descriptions"><a href="#use-triple-quotes-for-descriptions" class="header-anchor">#</a> Use triple quotes for descriptions</h2> <p>When adding descriptions to fields, use triple quotes (<code>&quot;&quot;&quot;</code>). Don't use <code>#</code>.</p> <ul><li><p><strong>Why?</strong></p> <p>There are two ways of adding comments in GraphQL - quotes (<code>&quot;&quot;&quot;like this&quot;&quot;&quot;</code>)
+and hashtags (<code># like this</code>). <a href="https://github.com/graphql/graphql-spec/issues/420#issuecomment-371279317" target="_blank" rel="noopener noreferrer">They are syntactically different however.<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p><code>&quot;&quot;&quot;this is a description&quot;&quot;&quot;</code> are <em>descriptions</em>, and should be used
+to document fields and types.</p> <p><code># this is a comment</code> syntax is ignored by the parser and should not
+be used for schema documentation.</p></li> <li><p><strong>Example</strong></p> <p>Instead of</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">extend</span> <span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token comment"># The name of the business (e.g. &quot;The French Laundry&quot;)</span>
+  <span class="token attr-name">name</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+
+  <span class="token description string">&quot;<span class="token language-markdown">The rating of the business</span>&quot;</span>
+  <span class="token attr-name">rating</span><span class="token punctuation">:</span> <span class="token scalar">Float</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Prefer</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">extend</span> <span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  The name of the business (e.g. &quot;The French Laundry&quot;)
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">name</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  The rating of the business
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">rating</span><span class="token punctuation">:</span> <span class="token scalar">Float</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul> <h2 id="space-out-field-descriptions"><a href="#space-out-field-descriptions" class="header-anchor">#</a> Space out field descriptions</h2> <p>When adding multiple fields and descriptions, space them out! (i.e. newlines
+between stanzas)</p> <ul><li><p><strong>Why?</strong></p> <p>Readability!</p></li> <li><p><strong>Example</strong></p> <p>Instead of</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">YelpProsEntryPointBanner</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;<span class="token language-markdown">Yelp Pros logo image url</span>&quot;</span>
+  <span class="token attr-name">logoUrl</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+  <span class="token description string">&quot;<span class="token language-markdown">Part of the heading for the banner - starting part</span>&quot;</span>
+  <span class="token attr-name">headingStart</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+  <span class="token description string">&quot;<span class="token language-markdown">Part of the heading for the banner - ending part</span>&quot;</span>
+  <span class="token attr-name">headingEnd</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+  <span class="token description string">&quot;<span class="token language-markdown">Sub heading of the banner</span>&quot;</span>
+  <span class="token attr-name">subHeading</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Prefer</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">YelpProsEntryPointBanner</span> <span class="token directive function">@owners</span><span class="token punctuation">(</span><span class="token attr-name">teams</span><span class="token punctuation">:</span> <span class="token string">&quot;services-marketplace&quot;</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Yelp Pros logo image url
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">logoUrl</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Part of the heading for the banner - starting part
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">headingStart</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Part of the heading for the banner - ending part
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">headingEnd</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Sub heading of the banner
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">subHeading</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul> <h2 id="be-super-explicit-with-comments-and-descriptions"><a href="#be-super-explicit-with-comments-and-descriptions" class="header-anchor">#</a> Be super explicit with comments and descriptions</h2> <p>Provide as much context as you can about type, field, parameter etc you’re
+adding. Describe concepts <a href="https://fs.blog/2018/04/first-principles" target="_blank" rel="noopener noreferrer">from first principles<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> where
+applicable.</p> <p>Some examples of things to think about:</p> <ul><li>Clear description of <em>what</em> the thing being added is</li> <li>Avoid any team-specific acronyms</li> <li>Describe all enum values so we know what the different options represent</li> <li>Permalink to sources of truth that define or document the data/concept</li></ul> <p>Pretend a newhire is reading the schema, and the only context they have is just
+what you wrote. Do they have enough information to know how to use it, given
+your comments alone?</p> <ul><li><p><strong>Why?</strong></p> <p>Don’t assume everyone in the future using the new schema you just wrote has the
+same knowledge you do! Put yourself in the shoes of a newhire - you’d want as
+much context as possible in order to understand what the schema is
+representing, in order to be able to use it 😃</p></li> <li><p><strong>Example</strong></p> <p>Instead of</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">extend</span> <span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Return a list of Yelfies, given a yelfieType
+  </span>&quot;&quot;&quot;</span>
+  <span class="token attr-name">getYelfies</span><span class="token punctuation">(</span>
+    <span class="token comment"># yelfie type</span>
+    <span class="token attr-name">yelfieType</span><span class="token punctuation">:</span> <span class="token scalar">String</span><span class="token operator">!</span>
+  <span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token class-name">Yelfie</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Prefer</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">extend</span> <span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+  Return a list of Yelfies.
+
+  A Yelfie is a user photo taken at a business, with some special filters
+  applied. See y/yelfies for more info about this feature.
+  </span>&quot;&quot;&quot;</span>
+  <span class="token property-query">getYelfies</span><span class="token punctuation">(</span>
+    <span class="token description string">&quot;&quot;&quot;<span class="token language-markdown">
+    Provide the type of Yelfie to filter for.
+    e.g. “smilingFace”, “eatingFood”
+
+    The yelfieTypes are defined in the yelfie.json config file - see y/yelfie-type-docs
+    </span>&quot;&quot;&quot;</span>
+    <span class="token attr-name">yelfieType</span><span class="token punctuation">:</span> <span class="token scalar">String</span><span class="token operator">!</span>
+  <span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token class-name">Yelfie</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul> <p>When modelling complex business objects, usually just a brief summary and a link
+to find more will suffice.</p> <h2 id="use-nullable-for-most-object-fields-by-default-but-there-are-many-exceptions"><a href="#use-nullable-for-most-object-fields-by-default-but-there-are-many-exceptions" class="header-anchor">#</a> Use nullable for most object fields by default, but there are many exceptions</h2> <p><em>Refer to <a href="/graphql-guidelines/nullability.html">Nullability</a> for detailed recommendations.</em></p> <p><img src="/graphql-guidelines/assets/img/nullability.dd7156b1.png" alt="nullability diagram"></p></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">11/23/2021, 2:37:27 PM</span></div></footer> <div class="page-nav"><p class="inner"><!----> <span class="next"><a href="/graphql-guidelines/nullability.html">
+        ❓ Nullability
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/graphql-guidelines/assets/js/app.39fdcfd0.js" defer></script><script src="/graphql-guidelines/assets/js/2.36e16460.js" defer></script><script src="/graphql-guidelines/assets/js/7.1de9bfa9.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>❓ Nullability | GraphQL @ Yelp Schema Design Guidelines</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    <link rel="icon" href="/graphql-guidelines/logo.png">
+    <meta name="description" content="Schema Design Guidelines for GraphQL @ Yelp">
+    
+    <link rel="preload" href="/graphql-guidelines/assets/css/0.styles.1657012b.css" as="style"><link rel="preload" href="/graphql-guidelines/assets/js/app.39fdcfd0.js" as="script"><link rel="preload" href="/graphql-guidelines/assets/js/2.36e16460.js" as="script"><link rel="preload" href="/graphql-guidelines/assets/js/6.b6725816.js" as="script"><link rel="prefetch" href="/graphql-guidelines/assets/js/3.c1413f7b.js"><link rel="prefetch" href="/graphql-guidelines/assets/js/4.5e68e7c8.js"><link rel="prefetch" href="/graphql-guidelines/assets/js/5.60881b85.js"><link rel="prefetch" href="/graphql-guidelines/assets/js/7.1de9bfa9.js"><link rel="prefetch" href="/graphql-guidelines/assets/js/8.41003aff.js"><link rel="prefetch" href="/graphql-guidelines/assets/js/9.3b41c15d.js">
+    <link rel="stylesheet" href="/graphql-guidelines/assets/css/0.styles.1657012b.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/graphql-guidelines/" class="home-link router-link-active"><img src="/graphql-guidelines/logo.png" alt="GraphQL @ Yelp Schema Design Guidelines" class="logo"> <span class="site-name can-hide">GraphQL @ Yelp Schema Design Guidelines</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <!----></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><!---->  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>GraphQL Styleguide</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/graphql-guidelines/schema-design.html" class="sidebar-link">🎨 Schema Design</a></li><li><a href="/graphql-guidelines/nullability.html" aria-current="page" class="active sidebar-link">❓ Nullability</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/graphql-guidelines/nullability.html#summary" class="sidebar-link">Summary</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/nullability.html#an-example-why-is-this-an-issue" class="sidebar-link">An example - Why is this an issue?</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/nullability.html#principles-to-keep-in-mind" class="sidebar-link">Principles to keep in mind</a></li><li class="sidebar-sub-header"><a href="/graphql-guidelines/nullability.html#advice-by-type" class="sidebar-link">Advice by type</a></li></ul></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="❓-nullability"><a href="#❓-nullability" class="header-anchor">#</a> ❓ Nullability</h1> <p>Fields are nullable by default in GraphQL. This was chosen so that a single
+(versionless) schema <a href="https://medium.com/@calebmer/when-to-use-graphql-non-null-fields-4059337f6fc8" target="_blank" rel="noopener noreferrer">can evolve along with our models and data fetching, and
+remain backwards compatible<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> (remember that nullable -&gt;
+non-nullable is backwards compatible, except for input arguments).</p> <p>The one exception is that fields with the ID type and fields related to
+pagination <em>must</em> be non-null to conform to the <a href="https://graphql.org/learn/global-object-identification/" target="_blank" rel="noopener noreferrer">Global Object Identification Specification<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>
+and <a href="https://relay.dev/graphql/connections.htm" target="_blank" rel="noopener noreferrer">Cursor Connections Specification<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>.</p> <p>However, nullables complicate writing client code. For strongly typed clients
+like the mobile platforms in particular, the client must explicitly handle the
+null case in every situation it could conceivably appear, which can result in
+enormous amounts of boilerplate. For this reason, we should be thoughtful about
+making fields nullable.</p> <p>It is also rarely the case that clients are set up to handle partial data. If you
+want to provide partial data, make sure it's something the client can actually use.</p> <p>If a field is non-nullable, then everything in that type will be null. For
+instance, if in the Business object, the name is non-nullable, but something goes
+wrong and the name ends up being null anyway, the whole Business object will be
+made null. If the Business object was nullable it stops there, otherwise
+whatever object the Business object is in becomes null, and so on, walking up
+the tree of types. The diagram below shows an example of how this works.</p> <p><em>To visualize the relationship between nullability and errors, try <a href="https://apollo-visualizer.vercel.app/" target="_blank" rel="noopener noreferrer">https://apollo-visualizer.vercel.app/<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></em></p> <h2 id="summary"><a href="#summary" class="header-anchor">#</a> Summary</h2> <p><img src="/graphql-guidelines/assets/img/nullability.dd7156b1.png" alt="nullability diagram"></p> <h2 id="an-example-why-is-this-an-issue"><a href="#an-example-why-is-this-an-issue" class="header-anchor">#</a> An example - Why is this an issue?</h2> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">encid</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+  <span class="token attr-name">name</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+  <span class="token attr-name">promotion</span><span class="token punctuation">:</span> <span class="token class-name">Promotion</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">type</span> <span class="token class-name">Promotion</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">encid</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+  <span class="token attr-name">amount</span><span class="token punctuation">:</span> <span class="token class-name">Amount</span>
+  <span class="token attr-name">createdBy</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">type</span> <span class="token class-name">Amount</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">value</span><span class="token punctuation">:</span> <span class="token scalar">Int</span>
+  <span class="token attr-name">currencyCode</span><span class="token punctuation">:</span> <span class="token scalar">String</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>This schema may look fine, but would this corresponding response make any sense? Consider the checks the client would have to do to parse this data.</p> <div class="language-json extra-class"><pre class="language-json"><code>business<span class="token operator">:</span> <span class="token punctuation">{</span>
+  <span class="token property">&quot;encid&quot;</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+  <span class="token property">&quot;name&quot;</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+  <span class="token property">&quot;promotion&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">&quot;encid&quot;</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;amount&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">&quot;value&quot;</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+      <span class="token property">&quot;currencyCode&quot;</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Having said this, while making fields non-nullable can reduce complexity on the client, it reduces your ability to deal with partial results.
+If a non-nullable field resolves to <code>null</code>, GraphQL will walk up the parent tree and serve <code>null</code> for the first nullable parent it finds:</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Query</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">business</span><span class="token punctuation">:</span> <span class="token class-name">Business</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">name</span><span class="token punctuation">:</span> <span class="token scalar">String</span><span class="token operator">!</span>
+  <span class="token attr-name">location</span><span class="token punctuation">:</span> <span class="token class-name">Location</span><span class="token operator">!</span>
+  <span class="token comment"># etc</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-json extra-class"><pre class="language-json"><code># What the resolver returns
+<span class="token punctuation">{</span>
+  <span class="token property">&quot;business&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">&quot;name&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Bobs Doughnuts&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;location&quot;</span><span class="token operator">:</span> <span class="token null keyword">null</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+# What is actually served to the client
+<span class="token punctuation">{</span>
+  <span class="token property">&quot;business&quot;</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="principles-to-keep-in-mind"><a href="#principles-to-keep-in-mind" class="header-anchor">#</a> Principles to keep in mind</h2> <p><img src="/graphql-guidelines/assets/img/nullability_definitions.a563fbd5.png" alt="nullability definitions"></p> <ul><li>Handling partial data does require special code, which rarely exists on clients
+<ul><li>It's often not straightforward to figure out what a screen should look like with arbitrary missing data.</li> <li>Different data could hypothetically be missing in different circumstances, and each case would need to be supported.</li> <li>It may not be worth the engineering effort to support partial data.</li></ul></li></ul> <h3 id="don-t-make-scalar-fields-nullable-if-a-null-never-makes-sense-for-the-field"><a href="#don-t-make-scalar-fields-nullable-if-a-null-never-makes-sense-for-the-field" class="header-anchor">#</a> Don't make scalar fields nullable if a null never makes sense for the field</h3> <ul><li><p><strong>Why?</strong></p> <p>It adds more work for client developers and doesn't communicate what data the schema is expected to provide.</p></li> <li><p><strong>Example</strong></p> <p>For many simple scalar fields, if the field is null, the type doesn't make much sense.</p></li></ul> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Money</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">value</span><span class="token punctuation">:</span> <span class="token scalar">Int</span><span class="token operator">!</span>
+  <span class="token attr-name">currencyCode</span><span class="token punctuation">:</span> <span class="token scalar">String</span><span class="token operator">!</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><em>E.g. the <code>Money</code> type doesn't make sense if <code>value</code> or <code>currencyCode</code> are missing.</em></p> <p>For other fields, a null value could become meaningful in the future even if it isn't now. If it seems plausible that
+this might happen, it might make sense to make it non-nullable.</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">location</span><span class="token punctuation">:</span> <span class="token class-name">Location</span>
+  <span class="token comment"># etc</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>For instance, suppose that now businesses must have a location. In the future, this could plausibly not be the case,
+so this field is nullable.</p> <p><em>E.g. we could start supporting businesses without a fixed location.</em></p> <h3 id="use-nullable-fields-more-in-larger-more-widely-used-types"><a href="#use-nullable-fields-more-in-larger-more-widely-used-types" class="header-anchor">#</a> Use nullable fields more in larger, more widely used types</h3> <p>Generally, larger types that are used much more frequently should have more nullable fields, and smaller types used
+less frequently should have more non-nullable fields.</p> <ul><li><p><strong>Why?</strong></p> <ul><li>If a field on some type is non-nullable and its value ends up being null anyway, it makes the entire type null.</li> <li>The more important and more widely used the type, the more important it is to not accidentally null out the type.</li> <li>The more complex the type, the more likely you are to miss a case where some of it could plausibly be null.</li></ul></li> <li><p><strong>Example</strong></p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">headerPhoto</span><span class="token punctuation">:</span> <span class="token class-name">Photo</span><span class="token operator">!</span>
+  <span class="token comment"># etc</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>In this example, &quot;headerPhoto&quot; is non-nullable. If something goes wrong with &quot;headerPhoto&quot;, the <em>entire</em> business
+object will be null. This is a rather extreme reaction to an error. Also the Business object is important
+and widely used, so a problem with the Business object could make the app unusable.</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Photo</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">size</span><span class="token punctuation">:</span> <span class="token class-name">Size</span><span class="token operator">!</span>
+  <span class="token attr-name">url</span><span class="token punctuation">:</span> <span class="token class-name">Url</span><span class="token operator">!</span>
+  <span class="token attr-name">author</span><span class="token punctuation">:</span> <span class="token class-name">User</span><span class="token operator">!</span>
+  <span class="token attr-name">date</span><span class="token punctuation">:</span> <span class="token class-name">Date</span><span class="token operator">!</span>
+  <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>However, in this example, we can be a bit more aggressive, because if something goes wrong, we just wipe out one
+photo. Should we try and handle the size being null? Or the URL? Probably not. And if we expect to display a user,
+a date, etc, how should the UI change for each combination of missing fields? Is it worth supporting all these edge
+cases? Or just say we can't display the photo unless we have the key data we need?</p></li></ul> <h3 id="if-you-have-a-lot-of-semantic-nulls-consider-having-different-types-to-represent-this-data"><a href="#if-you-have-a-lot-of-semantic-nulls-consider-having-different-types-to-represent-this-data" class="header-anchor">#</a> If you have a lot of semantic nulls, consider having different types to represent this data.</h3> <ul><li><strong>Why?</strong></li></ul> <p>If you are using nullables very frequently because you often expect fields to be null in normal circumstances, you
+might want to have different types unified by a union or interface.</p> <p>You can not only reduce the number of nulls, but allow the schema to more clearly self-document what data is
+expected through more focused types.</p> <ul><li><p><strong>Example</strong></p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">User</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">isElite</span><span class="token punctuation">:</span> <span class="token scalar">Boolean</span><span class="token operator">!</span>
+  <span class="token attr-name">yearsElite</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token class-name">Year</span><span class="token operator">!</span><span class="token punctuation">]</span>
+  <span class="token attr-name">name</span><span class="token punctuation">:</span> <span class="token scalar">String</span><span class="token operator">!</span>
+  <span class="token attr-name">reviews</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token class-name">Reviews</span><span class="token operator">!</span><span class="token punctuation">]</span><span class="token operator">!</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>You could have</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">interface</span> <span class="token class-name">User</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">name</span><span class="token punctuation">:</span> <span class="token scalar">String</span><span class="token operator">!</span>
+  <span class="token attr-name">reviews</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token class-name">Reviews</span><span class="token operator">!</span><span class="token punctuation">]</span><span class="token operator">!</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">type</span> <span class="token class-name">NormalUser</span> <span class="token keyword">implements</span> <span class="token class-name">User</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+<span class="token keyword">type</span> <span class="token class-name">EliteUser</span> <span class="token keyword">implements</span> <span class="token class-name">User</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">yearsElite</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token class-name">Year</span><span class="token operator">!</span><span class="token punctuation">]</span><span class="token operator">!</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul> <p>Conceptually, there are different types of users here, which can be represented by having distinct types linked by an
+interface. This makes it clear that only Elite users should have a list of years they have been elite, instead of
+having a nullable field where it isn't clear when the field is or is not expected to be null.</p> <h2 id="advice-by-type"><a href="#advice-by-type" class="header-anchor">#</a> Advice by type</h2> <p>Once you've determined that it's appropriate for the parent type to have non-nullable fields, there are some general guidelines for specific types.</p> <h3 id="lists"><a href="#lists" class="header-anchor">#</a> Lists</h3> <p>Usually, lists should not be null. The contents of a list should not be null either.</p> <ul><li><p><strong>Why?</strong></p> <ul><li>If you are making the contents of a list nullable, you are saying it is expected that the server will return
+a list that has some nulls in it. Would it be better to just filter out the nulls?</li> <li>If you make the list nullable, is there ever a case you would want to send a null <em>instead of</em> just sending an
+empty list? If not, don't make it null.</li></ul></li> <li><p><strong>Example</strong></p> <p>Instead of</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">reviews</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token class-name">Reviews</span><span class="token punctuation">]</span>
+  <span class="token comment"># etc</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Prefer</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">reviews</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token class-name">Reviews</span><span class="token operator">!</span><span class="token punctuation">]</span><span class="token operator">!</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>If there are no reviews, just return an empty list. And what would a &quot;null&quot; review signify?</p></li></ul> <h3 id="booleans"><a href="#booleans" class="header-anchor">#</a> Booleans</h3> <p>Usually, booleans should not be nullable.</p> <ul><li><p><strong>Why?</strong></p> <ul><li>Is the &quot;null&quot; state equivalent to True or False, and if so, why not just show that?</li> <li>If it represents some sort of third state, should it be an enum instead?</li></ul></li> <li><p><strong>Example</strong></p></li></ul> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">hasDelivery</span><span class="token punctuation">:</span> <span class="token scalar">Boolean</span><span class="token operator">!</span>
+  <span class="token comment"># etc</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li><p>If &quot;hasDelivery&quot; is null, what is the client supposed to do with that? Probably either the entire response should
+be an error, or the client should recover by assuming the business doesn't offer delivery.</p></li> <li><p>If there is any sort of limbo state between delivery and not-delivery, that could be expressed using an enum.</p></li></ul> <h3 id="enums"><a href="#enums" class="header-anchor">#</a> Enums</h3> <p>Usually, enums should not be nullable.</p> <ul><li><p><strong>Why?</strong></p> <p>If the enum could be null, what does the null state represent? Should that be another state in the enum?
+It probably would be more informative to have a state with a clear name replace &quot;null&quot;.</p></li> <li><p><strong>Example</strong></p></li></ul> <p>Instead of this:</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">reviewState</span><span class="token punctuation">:</span> <span class="token class-name">ReviewState</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">enum</span> <span class="token class-name">ReviewState</span> <span class="token punctuation">{</span>
+  <span class="token constant">REVIEWED</span>
+  <span class="token constant">DRAFT</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Or even this:</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">reviewState</span><span class="token punctuation">:</span> <span class="token class-name">ReviewState</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">enum</span> <span class="token class-name">ReviewState</span> <span class="token punctuation">{</span>
+  <span class="token constant">REVIEWED</span>
+  <span class="token constant">DRAFT</span>
+  <span class="token constant">NONE</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Enum values that explain what a null <em>means</em> can be more informative.</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Business</span> <span class="token punctuation">{</span>
+  <span class="token attr-name">reviewState</span><span class="token punctuation">:</span> <span class="token class-name">ReviewState</span><span class="token operator">!</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">enum</span> <span class="token class-name">ReviewState</span> <span class="token punctuation">{</span>
+  <span class="token constant">REVIEWED</span>
+  <span class="token constant">DRAFT</span>
+  <span class="token constant">NONE</span>
+  <span class="token constant">ERROR</span>
+  <span class="token constant">NOT_APPLICABLE</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="strings"><a href="#strings" class="header-anchor">#</a> Strings</h3> <p>Unless you have a very unusual use case, always use nullables instead of empty strings.</p> <ul><li><p><strong>Why?</strong></p> <p>Empty strings can lead to weird UI state. Nulls force the client to handle the case there is no data, but to the
+compiler an empty string looks no different than one with content.</p></li> <li><p><strong>Example</strong></p> <p>Instead of</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Photo</span> <span class="token punctuation">{</span>
+   <span class="token attr-name">url</span><span class="token punctuation">:</span> <span class="token class-name">Url</span><span class="token operator">!</span>
+   <span class="token attr-name">author</span><span class="token punctuation">:</span> <span class="token class-name">User</span><span class="token operator">!</span>
+   <span class="token attr-name">caption</span><span class="token punctuation">:</span> <span class="token property">string</span><span class="token operator">!</span>
+   <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Prefer</p> <div class="language-graphql extra-class"><pre class="language-graphql"><code><span class="token keyword">type</span> <span class="token class-name">Photo</span> <span class="token punctuation">{</span>
+   <span class="token attr-name">url</span><span class="token punctuation">:</span> <span class="token class-name">Url</span><span class="token operator">!</span>
+   <span class="token attr-name">author</span><span class="token punctuation">:</span> <span class="token class-name">User</span><span class="token operator">!</span>
+   <span class="token attr-name">caption</span><span class="token punctuation">:</span> <span class="token property">string</span>
+   <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>Otherwise, if the caption were the empty string, you might have a strange blank space where the caption should go.</li></ul></li></ul></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">10/22/2021, 11:13:46 AM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/graphql-guidelines/schema-design.html" class="prev">
+        🎨 Schema Design
+      </a></span> <!----></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/graphql-guidelines/assets/js/app.39fdcfd0.js" defer></script><script src="/graphql-guidelines/assets/js/2.36e16460.js" defer></script><script src="/graphql-guidelines/assets/js/6.b6725816.js" defer></script>
+  </body>
+</html>
