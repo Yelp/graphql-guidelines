@@ -318,9 +318,8 @@ When adding descriptions to fields, use triple quotes (`"""`). Don't use `#`.
 
 - **Why?**
 
-  There are two ways of adding comments in GraphQL - triple quotes
-  (`"""like this"""`) and hashtags (`# like this`). [They are syntactically
-  different however.](https://github.com/graphql/graphql-spec/issues/420#issuecomment-371279317)
+  There are two ways of adding comments in GraphQL - quotes (`"""like this"""`)
+  and hashtags (`# like this`). [They are syntactically different however.](https://github.com/graphql/graphql-spec/issues/420#issuecomment-371279317)
 
   `"""this is a description"""` are _descriptions_, and should be used
   to document fields and types.
@@ -336,6 +335,9 @@ When adding descriptions to fields, use triple quotes (`"""`). Don't use `#`.
   extend type Business {
     # The name of the business (e.g. "The French Laundry")
     name: String
+
+    "The rating of the business"
+    rating: Float
   }
   ```
 
@@ -347,6 +349,11 @@ When adding descriptions to fields, use triple quotes (`"""`). Don't use `#`.
     The name of the business (e.g. "The French Laundry")
     """
     name: String
+
+    """
+    The rating of the business
+    """
+    rating: Float
   }
   ```
 
@@ -423,10 +430,10 @@ your comments alone?
 
 - **Why?**
 
-  Don’t assume everyone at Yelp wanting to use the fancy new schema you just
-  wrote has the same knowledge you have! Put yourself in the shoes of a newhire
-  at Yelp - you’d want as much context as possible in order to understand
-  what the schema is representing, in order to be able to use it :)
+  Don’t assume everyone in the future using the new schema you just wrote has the
+  same knowledge you do! Put yourself in the shoes of a newhire - you’d want as
+  much context as possible in order to understand what the schema is
+  representing, in order to be able to use it :)
 
 - **Example**
 
@@ -434,7 +441,9 @@ your comments alone?
 
   ```graphql
   extend type Business {
-    # Return a list of Yelfies, given a yelfieType
+    """
+    Return a list of Yelfies, given a yelfieType
+    """
     getYelfies(
       # yelfie type
       yelfieType: String!
