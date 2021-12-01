@@ -1,4 +1,5 @@
 module.exports = {
+  base: '/graphql-guidelines/',
   head: [['link', { rel: 'icon', href: '/logo.png' }]],
   title: 'GraphQL @ Yelp Schema Design Guidelines',
   description: 'Schema Design Guidelines for GraphQL @ Yelp',
