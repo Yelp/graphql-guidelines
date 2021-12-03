@@ -19,6 +19,6 @@ git config user.email "darwin@yelp.com"
 git config user.name "Darwin S."
 git commit -m 'deploy'
 
-git push -f git@github.com:Yelp/graphql-guidelines.git master:docs
+git push -f https://${GITHUB_TOKEN}@github.com:Yelp/graphql-guidelines.git master:docs
 
 cd -
