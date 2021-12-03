@@ -15,5 +15,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
+          cache: 'yarn'
+      - run: yarn install
       - name: publish to github pages
         run: ./deploy_docs.sh
