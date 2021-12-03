@@ -13,6 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: install node_modules
-        run: make node_modules
+        run: yarn
       - name: publish to github pages
         run: ./deploy_docs.sh
