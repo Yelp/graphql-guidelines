@@ -7,5 +7,3 @@ Guidelines:
 
 - [Schema Design](./schema-design.md)
 - [Nullability](./nullability.md)
-
-test
