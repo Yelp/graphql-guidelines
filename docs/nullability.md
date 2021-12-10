@@ -130,7 +130,7 @@ type Money {
 _E.g. the `Money` type doesn't make sense if `value` or `currencyCode` are missing._
 
 For other fields, a null value could become meaningful in the future even if it isn't now. If it seems plausible that
-this might happen, it might make sense to make it non-nullable.
+this might happen, it might make sense to make it nullable.
 
 ```graphql
 type Business {
